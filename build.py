@@ -2,36 +2,38 @@ import pandas as pd
 
 
 def load_data():
-    """
-        Enter your code here
-    """
+
+    olympic_csv = pd.read_csv("./files/olympics.csv",skiprows=[0])
+    olympic_csv = olympic_csv.rename(columns = {'01 !' :'Gold', '02 !':'Silver', '03 !':'Bronze', \
+                                                '01 !.1':'Gold.1', '02 !.1':'Silver.1', '03 !.1':'Bronze.1', \
+                                                '01 !.2':'Gold.2', '02 !.2':'Silver.2', '03 !.2':'Bronze.2',})
+    country = olympic_csv['Unnamed: 0'].str.split("(",expand = True)
+    olympic_csv = olympic_csv.set_index(country[0].str.replace("\xc2\xa0", ""))
+    olympic_csv = olympic_csv.drop('Total',1)
+
+    return olympic_csv.drop(olympic_csv.index[len(olympic_csv)-1])
+
 
 
 def first_country(df):
-    """
-        Enter your code here
-    """
+
+    return df.iloc[0]
+
 
 
 def gold_medal(df):
-    """
-        Enter your code here
-    """
+
+    return df["Gold"].idxmax()
 
 
 def biggest_difference_in_gold_medal(df):
-    """
-        Enter your code here
-    """
+
+    gold_diff = df["Gold"] - df["Gold.1"]
+    return gold_diff.idxmax()
 
 def get_points(df):
-    """
-    Enter your code here
-    """
 
-
-# df = load_data()
-# print(first_country(df)["# Summer"])
-# print(gold_medal(df))
-# print(biggest_difference_in_gold_medal(df))
-# print(get_points(df))
+    Points = df["Gold.2"]*3 + df["Silver.2"]*2 + df["Bronze.2"]
+    df['Points'] = Points
+    new_df = df['Points']
+    return new_df
